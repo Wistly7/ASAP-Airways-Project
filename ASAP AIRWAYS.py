@@ -1,32 +1,38 @@
 from tkinter import *
 from tkinter.ttk import *
+import project_data
 
-import mysql.connector as sql
+# import mysql.connector as sql
+import sqlite3
 from tkinter import scrolledtext
 from PIL import ImageTk, Image
 import random
 from datetime import *
 import tkinter.messagebox
 
-mydb = sql.connect(host="localhost", user="root", passwd="98711", database='project')
+mydb = sqlite3.connect("t.sqlite")
 mycursor = mydb.cursor()
 
 window = Tk()
 window.geometry('500x400')
 window.title('ASAP Airways')
 
-window.iconbitmap('C:/Users/pc/PycharmProjects/ASAP AIRWAYS/icon.ico')
+window.iconbitmap("icon.ico")
+
+# Add Sample Data
+project_data.createdb()
+project_data.addData()
 
 # Photos
-image = Image.open('C:/Users/pc/PycharmProjects/ASAP AIRWAYS/background header.png')
+image = Image.open('background header.png')
 new_image = image.resize((500, 100))
 image_ = ImageTk.PhotoImage(new_image)
 
-image2 = Image.open('C:/Users/pc/PycharmProjects/ASAP AIRWAYS/background.jpg')
+image2 = Image.open('background.jpg')
 new_image2 = image2.resize((500, 300))
 image2_ = ImageTk.PhotoImage(new_image2)
 
-image3 = Image.open('C:/Users/pc/PycharmProjects/ASAP AIRWAYS/background.jpg')
+image3 = Image.open('background.jpg')
 new_image3 = image3.resize((500, 400))
 image3_ = ImageTk.PhotoImage(new_image3)
 
@@ -130,7 +136,7 @@ def cancellation():
     if t == False:
         c_l2.configure(text='Booking Not Found')
     elif t == True:
-        mycursor.execute('delete from flight_details where Name=%s and Flight_No=%s', (a, b))
+        mycursor.execute('delete from flight_details where Name=? and Flight_No=?', (a, b))
         mydb.commit()
 
         c_l2.configure(text='Your Flight Has Been Cancelled')
@@ -157,7 +163,7 @@ def book():
 
         mycursor.execute("insert into flight_details(SNO,Name,Age,Gender,Flight_No"
                          ",Seat,Destination,Date_of_Departure,Time_of_Departure) "
-                         "values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",(no,name,age,gen,flight,seat,dest,str(dod),tod))
+                         "values(?,?,?,?,?,?,?,?,?)",(no,name,age,gen,flight,seat,dest,str(dod),tod))
         mydb.commit()
         message = tkinter.messagebox.showinfo(title='Seat Booked', message="Your Id No. is :"+str(no)+'\n Name :'+name)
     else:
